@@ -44,7 +44,6 @@ exit 0
 %post
 alternatives --install /opt/kafka kafkahome  /opt/%{name}-%{version} ##INTEGERVERSION##
 
-
 %preun
 service kafka stop
 
@@ -74,7 +73,11 @@ alternatives --remove kafkahome  /opt/%{name}-%{version}
 %{__cp} -R * %{buildroot}/opt/%{name}-%{version}
 %{__mkdir_p} %{buildroot}/var/log/kafka
 %{__mkdir_p} %{buildroot}/etc/rc.d/init.d
-install -m 755 %{S:1} $RPM_BUILD_ROOT/etc/rc.d/init.d/kafka
+install -m 755 %{S:1} %{buildroot}/etc/rc.d/init.d/kafka
+
+# Simply create this oneliner in the spec file
+%{__mkdir_p} %{buildroot}/etc/profile.d/
+echo 'export PATH=${PATH}:/opt/kafka/bin' > %{buildroot}/etc/profile.d/kafka.sh
 
 %files
 %defattr(-,kafka,kafka)
@@ -83,6 +86,7 @@ install -m 755 %{S:1} $RPM_BUILD_ROOT/etc/rc.d/init.d/kafka
 /opt/%{name}-%{version}
 /var/log/kafka
 /etc/rc.d/init.d/kafka
+/etc/profile.d/kafka.sh
 
 %clean
 #used to cleanup things outside the build area and possibly inside.

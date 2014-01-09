@@ -1,13 +1,13 @@
-#!/bin/bash
-
 #Put the version of storm you need in the next line
-KAFKARPMVERSIONTAG=0.8.0-beta1
+KAFKARPMVERSIONTAG=0.8.0
+#KAFKARPMVERSIONTAG=kafka-0.7.2-incubating-candidate-5
 #BEWARE THAT THIS MAY NOT CONTAIN A '-' !!!
-KAFKARPMVERSION=0.8.0_beta1
+KAFKARPMVERSION=0.8.0
+#KAFKARPMVERSION=0.7.2
 
 # The next thing is needed to  use the latest version.
 # This may NOT start with a '0' !!
-KAFKARPMVERSIONINTEGER=8001
+KAFKARPMVERSIONINTEGER=8000
 RPMRELEASE=1
 
 all: rpm
@@ -37,13 +37,15 @@ kafka-$(KAFKARPMVERSION).tar.gz: kafka/kafka.spec
 	  tar czf $@ kafka-$(KAFKARPMVERSION)/* ;\
 	 )
 
-kafka/kafka.spec: kafka.spec.in kafka/.git
+kafka/kafka.spec: kafka.spec.in kafka-version 
 	@echo "Creating the spec file"
 	@(cat $< | sed 's@##RPMVERSION##@$(KAFKARPMVERSION)@g;s@##RPMRELEASE##@$(RPMRELEASE)@g;s@##INTEGERVERSION##@$(KAFKARPMVERSIONINTEGER)@g' > $@ )
 	
 
 kafka/.git:
 	@git clone https://github.com/apache/kafka.git kafka
+
+kafka-version: kafka/.git Makefile
 	@( cd kafka; \
 	   git checkout $(KAFKARPMVERSIONTAG) ; \
 	)
