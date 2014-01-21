@@ -18,7 +18,7 @@ all: rpm
 rpm:: kafka-rpm
 kafka-rpm: kafka-$(KAFKARPMVERSION)*.rpm
 
-kafka-$(KAFKARPMVERSION)*.rpm: kafka-$(KAFKARPMVERSION).tar.gz java-is-installed
+kafka-$(KAFKARPMVERSION)*.rpm: kafka-$(KAFKARPMVERSION).tar.gz dev-tools-is-installed java-is-installed
 	@echo "Building the rpm"
 	-@mkdir -p RPM_BUILDING/BUILD  RPM_BUILDING/RPMS  RPM_BUILDING/SOURCES  RPM_BUILDING/SPECS  RPM_BUILDING/SRPMS
 	@rpmbuild --define="_topdir `pwd`/RPM_BUILDING" -tb $<
@@ -37,10 +37,9 @@ kafka-$(KAFKARPMVERSION).tar.gz: kafka/kafka.spec
 	  tar czf $@ kafka-$(KAFKARPMVERSION)/* ;\
 	 )
 
-kafka/kafka.spec: kafka.spec.in kafka-version 
+kafka/kafka.spec: kafka.spec.in kafka-version
 	@echo "Creating the spec file"
 	@(cat $< | sed 's@##RPMVERSION##@$(KAFKARPMVERSION)@g;s@##RPMRELEASE##@$(RPMRELEASE)@g;s@##INTEGERVERSION##@$(KAFKARPMVERSIONINTEGER)@g' > $@ )
-	
 
 kafka/.git:
 	@git clone https://github.com/apache/kafka.git kafka
@@ -50,15 +49,24 @@ kafka-version: kafka/.git Makefile
 	   git checkout $(KAFKARPMVERSIONTAG) ; \
 	)
 
+dev-tools-is-installed:
+	@(\
+	  if rpmbuild --version > /dev/null 2>&1 ; \
+	  then \
+	    echo INSTALLED > $@ ; \
+	  else \
+		echo "Development Tools is missing. Installing..." ; \
+		@yum groupinstall "Development Tools" -y ; \
+	  fi \
+	)
 
 java-is-installed:
 	@(\
 	  JAVAVERSION=$$(java -version 2>&1| head -1) ; \
 	  if [[ x$${JAVAVERSION} == x ]]; \
 	  then \
-	    echo "ERROR: Java (JDK) 1.7 is missing." ; \
-	    echo "JDK 1.7 can be downloaded from http://www.oracle.com/technetwork/java/javase/downloads/jdk7-downloads-1880260.html" ; \
-	    exit 1; \
+	    echo "Java (JDK) 1.7 is missing. Installing..." ; \
+	    @yum install java-1.7.0-openjdk.x86_64 -y ; \
 	  else \
 	    echo INSTALLED > $@ ; \
 	  fi \
@@ -66,6 +74,5 @@ java-is-installed:
 
 clean::
 	@echo -n "Cleaning kafka "
-	@rm -rf kafka kafka-$(KAFKARPMVERSION) kafka-$(KAFKARPMVERSION).tar.gz kafka-$(KAFKARPMVERSION)*rpm RPM_BUILDING java-is-installed
+	@rm -rf kafka kafka-$(KAFKARPMVERSION) kafka-$(KAFKARPMVERSION).tar.gz kafka-$(KAFKARPMVERSION)*rpm RPM_BUILDING java-is-installed dev-tools-is-installed
 	@echo "done."
-
