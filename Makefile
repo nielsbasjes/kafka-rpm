@@ -62,9 +62,8 @@ dev-tools-is-installed:
 
 java-is-installed:
 	@(\
-		#TODO need to detect javac also
-	  JAVAVERSION=$$(java -version 2>&1| head -1) ; \
-	  if [[ x$${JAVAVERSION} == x ]]; \
+	  JAVACVERSION=$$(javac -version 2>&1| head -1) ; \
+	  if [[ x$${JAVACVERSION} == x ]]; \
 	  then \
 	    echo "Java (JDK) 1.7 is missing. Installing..." ; \
 	    @yum install java-1.7.0-openjdk.x86_64 java-1.7.0-openjdk-devel -y ; \
