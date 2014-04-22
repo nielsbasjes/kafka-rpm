@@ -1,24 +1,24 @@
-#Put the version of storm you need in the next line
-KAFKARPMVERSIONTAG=0.8.0
-#KAFKARPMVERSIONTAG=kafka-0.7.2-incubating-candidate-5
+# The git tag/branch of storm you need (i.e. master or 0.8.1.0 )
+GIT_VERSION_TAG=0.8.1.0
+
+#The version for the RPM 
 #BEWARE THAT THIS MAY NOT CONTAIN A '-' !!!
-KAFKARPMVERSION=0.8.0
-#KAFKARPMVERSION=0.7.2
+RPM_VERSION=0.8.1.0
 
-# The next thing is needed to  use the latest version.
+# The next thing is needed to use the latest version.
+# This is a numerical value that should increase with a newer release
 # This may NOT start with a '0' !!
-KAFKARPMVERSIONINTEGER=8000
-RPMRELEASE=1
-
-all: rpm
+RPM_VERSION_INTEGER=8100
 
 # =======================================================================
 
+all: rpm
+
 .PHONY: kafka-rpm
 rpm:: kafka-rpm
-kafka-rpm: kafka-$(KAFKARPMVERSION)*.rpm
+kafka-rpm: kafka-$(RPM_VERSION)*.rpm
 
-kafka-$(KAFKARPMVERSION)*.rpm: kafka-$(KAFKARPMVERSION).tar.gz java-is-installed
+kafka-$(RPM_VERSION)*.rpm: kafka-$(RPM_VERSION).tar.gz java-is-installed
 	@echo "Building the rpm"
 	-@mkdir -p RPM_BUILDING/BUILD  RPM_BUILDING/RPMS  RPM_BUILDING/SOURCES  RPM_BUILDING/SPECS  RPM_BUILDING/SRPMS
 	@rpmbuild --define="_topdir `pwd`/RPM_BUILDING" -tb $<
@@ -29,25 +29,32 @@ kafka-$(KAFKARPMVERSION)*.rpm: kafka-$(KAFKARPMVERSION).tar.gz java-is-installed
 	@ls -laF kafka*rpm
 	@echo "================================================="
 
-kafka-$(KAFKARPMVERSION).tar.gz: kafka/kafka.spec
+kafka-$(RPM_VERSION).tar.gz: kafka/kafka.spec
 	@echo "Creating a $@ file."
 	@(\
-	  rm -f kafka-$(KAFKARPMVERSION); \
-	  ln -s kafka kafka-$(KAFKARPMVERSION); \
-	  tar czf $@ kafka-$(KAFKARPMVERSION)/* ;\
+	  rm -f kafka-$(RPM_VERSION); \
+	  ln -s kafka kafka-$(RPM_VERSION); \
+	  tar czf $@ kafka-$(RPM_VERSION)/* ;\
 	 )
 
-kafka/kafka.spec: kafka.spec.in kafka-version 
+kafka/kafka.spec: kafka.spec.in kafka-version RELEASE
 	@echo "Creating the spec file"
-	@(cat $< | sed 's@##RPMVERSION##@$(KAFKARPMVERSION)@g;s@##RPMRELEASE##@$(RPMRELEASE)@g;s@##INTEGERVERSION##@$(KAFKARPMVERSIONINTEGER)@g' > $@ )
-	
+	@read REL < RELEASE ; (( REL += 1)) ; echo $${REL} > RELEASE 
+	cat $< | \
+	    sed "\
+	      s@##RPMVERSION##@$(RPM_VERSION)@g;\
+	      s@##RPMRELEASE##@$$(cat RELEASE)@g;\
+	      s@##INTEGERVERSION##@$(RPM_VERSION_INTEGER)@g" > $@ 
+
+RELEASE:
+	@echo 0 > $@
 
 kafka/.git:
 	@git clone https://github.com/apache/kafka.git kafka
 
 kafka-version: kafka/.git Makefile
 	@( cd kafka; \
-	   git checkout $(KAFKARPMVERSIONTAG) ; \
+	   git checkout $(GIT_VERSION_TAG) ; \
 	)
 
 
@@ -66,6 +73,6 @@ java-is-installed:
 
 clean::
 	@echo -n "Cleaning kafka "
-	@rm -rf kafka kafka-$(KAFKARPMVERSION) kafka-$(KAFKARPMVERSION).tar.gz kafka-$(KAFKARPMVERSION)*rpm RPM_BUILDING java-is-installed
+	@rm -rf kafka kafka-$(RPM_VERSION) kafka-$(RPM_VERSION).tar.gz kafka-$(RPM_VERSION)*rpm RPM_BUILDING java-is-installed
 	@echo "done."
 

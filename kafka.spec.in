@@ -2,13 +2,11 @@ Summary: Kafka is a distributed publish/subscribe messaging system
 Name: kafka
 Version: ##RPMVERSION##
 Release: ##RPMRELEASE##%{?dist}
+Group: Applications/Internet
 License: Apache (v2)
-Group: Applications
 Source0: kafka-%{version}.tar.gz
 Source1: kafka.init
 Source2: zookeeper.init
-#Patch0: sbt.patch
-#Patch1: kafka-run-class.patch
 URL: http://kafka.apache.org
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
 Distribution: Niels Basjes
@@ -60,9 +58,7 @@ alternatives --remove kafkahome  /opt/%{name}-%{version}
 %build
 # Build package
 
-./sbt update
-./sbt +package
-./sbt assembly-package-dependency
+./gradlew releaseTarGz
 
 %install
 
