@@ -58,7 +58,7 @@ alternatives --remove kafkahome  /opt/%{name}-%{version}
 %build
 # Build package
 
-./gradlew releaseTarGz
+./gradlew -PscalaVersion=2.10.4 releaseTarGz
 
 %install
 
