@@ -13,7 +13,7 @@ Distribution: Niels Basjes
 Vendor: Niels Basjes
 Packager: Niels Basjes <kafka@basjes.nl>
 
-Requires: jdk >= 1.6
+Requires: java >= 1.6
 Requires(pre): shadow-utils
 Requires: zookeeper >= 3.3.1
 
