@@ -15,7 +15,7 @@ Packager: Niels Basjes <kafka@basjes.nl>
 
 Requires: java >= 1.6
 Requires(pre): shadow-utils
-Requires: zookeeper >= 3.3.1
+Requires: zookeeper >= 3.3.4
 
 %description
 It is designed to support the following
@@ -58,7 +58,7 @@ alternatives --remove kafkahome  /opt/%{name}-%{version}
 %build
 # Build package
 
-./gradlew releaseTarGz
+./gradlew -PscalaVersion=2.10.4 releaseTarGz -x signArchives
 
 %install
 

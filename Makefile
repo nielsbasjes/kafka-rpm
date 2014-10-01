@@ -1,7 +1,7 @@
 # The git tag/branch of storm you need (i.e. master or 0.8.1.0 )
 GIT_VERSION_TAG=0.8.1.1
 
-#The version for the RPM 
+#The version for the RPM
 #BEWARE THAT THIS MAY NOT CONTAIN A '-' !!!
 RPM_VERSION=0.8.1.1
 
