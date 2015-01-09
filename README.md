@@ -9,6 +9,9 @@ Note that most of the scripting has been massively rewritten.
 
 Dependencies
 =====
+In kafka version 0.8.2-beta the jar that was distributed with gradle has been removed, so that now you will need
+a local installation of [gradle](https://www.gradle.org/downloads) in your PATH.
+
 If you don't already have development tools installed:
 $ yum groupinstall "Development Tools"
 
