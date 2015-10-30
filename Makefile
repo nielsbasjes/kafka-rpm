@@ -1,14 +1,15 @@
 # The git tag/branch of kafka you need (i.e. master or 0.8.1.0 )
-GIT_VERSION_TAG=0.8.2-beta
+GIT_VERSION_TAG=0.8.2.2
 
 #The version for the RPM
 #BEWARE THAT THIS MAY NOT CONTAIN A '-' !!!
-RPM_VERSION=0.8.2_beta1
+RPM_VERSION=0.8.2.2
 
 # The next thing is needed to use the latest version.
 # This is a numerical value that should increase with a newer release
 # This may NOT start with a '0' !!
-RPM_VERSION_INTEGER=8200
+# The 1.0 release must become 10000
+RPM_VERSION_INTEGER=8220
 
 # =======================================================================
 
@@ -73,6 +74,6 @@ java-is-installed:
 
 clean::
 	@echo -n "Cleaning kafka "
-	@rm -rf kafka kafka-$(RPM_VERSION) kafka-$(RPM_VERSION).tar.gz kafka-$(RPM_VERSION)*rpm RPM_BUILDING java-is-installed
+	@rm -rf kafka kafka-$(RPM_VERSION) kafka-$(RPM_VERSION).tar.gz kafka-$(RPM_VERSION)*rpm kafka-debuginfo-$(RPM_VERSION)*rpm RPM_BUILDING java-is-installed
 	@echo "done."
 
